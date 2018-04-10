@@ -1,0 +1,55 @@
+---
+title: "data_exploration"
+output:
+  html_document: default
+  pdf_document: default
+---
+
+```{r}
+# install.packages("rmarkdown")
+# install.packages("readr")
+library(readr)
+```
+
+## Loading and cleaning dataset
+
+```{r, message=FALSE, warning=FALSE}
+# Loading and cleaning data from source
+
+data <- read_csv('life_expectancy_data.csv', 
+                 col_names = TRUE, 
+                 col_types = cols(Population = col_double()), 
+                 trim_ws = TRUE)
+
+head(data, 10) #view first 10 rows
+```
+### Data exploration and scoping
+
+```{r, message=FALSE, warning=FALSE}
+
+# Picking data from one year- try most recent year
+
+data_2015 = data[data$Year == 2015, ] # Most recent year available
+
+missing_2015 <- colSums(is.na(data_2015))
+print("Columns with more than 10% missing data for 2015:")
+print(missing_2015[missing_2015 > 18])
+
+# Two predictors with data mostly incomplete- try the next most recent year
+
+data_2014 = data[data$Year == 2014, ] # Next most recent year
+missing_2014 <- colSums(is.na(data_2014))
+print("Columns with more than 10% missing data for 2014:")
+print(missing_2014[missing_2014 > 18])
+
+
+```
+
+## TO-DO
+
+### Cleaning up predictors for model
+
+Assign dummy variable for status: Developed = 1, Developing = 0
+
+### List of variables
+
