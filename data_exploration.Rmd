@@ -60,15 +60,14 @@ input["status_code"] <- NA
 input$status_code[input$status == 'Developed'] <- 1
 input$status_code[input$status == 'Developing'] <- 0
 
+# drop unused columns for regression model
+input <- input[, !(colnames(input) %in% c('country', 'year', 'status'))]
+
 head(input, 10) #view first 10 rows
 write.csv(input, file='data/life_expectancy_input.csv')
 ```
 
 ## TO-DO
-
-### Cleaning up predictors for model
-
-Assign dummy variable for status: Developed = 1, Developing = 0
 
 ### List of variables
 
