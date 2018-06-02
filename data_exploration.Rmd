@@ -1,18 +1,19 @@
 ---
-title: "data_exploration"
+title: |
+  | Data Exploration and Analysis: 
+  | Multiple Regression with Life Expectancy Prediction 
 output:
-  html_document: default
   pdf_document: default
 ---
 
-```{r}
-# install.packages("rmarkdown")
-# install.packages("readr")
-# install.packages("leaps")
-# install.packages("corrplot")
+```{r message=FALSE, warning=FALSE}
+
 library(readr)
 library(leaps)
 library(corrplot)
+
+library(tseries)
+library(DescTools)
 ```
 
 ## Loading and cleaning dataset
@@ -83,13 +84,15 @@ corrplot(correlation, method = 'color')
 
 ```
 
-Predictors with strong positive correlation with life_expectancy:
-- income_comp
-- schooling
+Predictors with strong positive correlation with life_expectancy:  
 
-Predictors with strong negative correlation with life_expectancy:
-- adult_mortality
-- hiv_aids
+* income_comp
+* schooling
+
+Predictors with strong negative correlation with life_expectancy:  
+
+* adult_mortality
+* hiv_aids
 
 
 ### Stepwise selection using AIC
@@ -101,14 +104,59 @@ attach(input)
 nullmodel <- lm(life_expectancy~1, data=input)
 fullmodel <- lm(life_expectancy~., data=input)
 
-step(nullmodel, data=input, scope=list(upper=fullmodel, lower=nullmodel, direction='both', k=2, test='F'))
+step(nullmodel, data=input, scope=list(upper=fullmodel, lower=nullmodel, direction='both', k=2, test='F'), trace=0)
 
 ```
+### Reduced linear model after variable selection
+
+After the stepwise selection, we choose to include the following four predictors:  
+
+  * income_comp (income composition of resources index)
+  * adult_mortality (adult mortality probability)
+  * hiv_aids (death rate from HIV/AIDS)
+  * total_expend (government expenditure on health)
+
+From this, we can build the regression model and perform analysis of variance:  
+
 ```{r, message=FALSE, warning=FALSE}
 
 model1 <- lm(life_expectancy ~ income_comp + adult_mortality + hiv_aids + total_expend)
 
 anova(model1)
 summary(model1)
+```
+
+### Testing linear model assumptions
+
+Residual plot for constant variance of residuals:  
+
+```{r,message=FALSE, warning=FALSE}
+plot(model1$fit, model1$res, xlab="FItted", ylab="Residuals", main="Residuals Against Fitted Values")
+
+abline(h=0, lty=2)
+```
+
+Since there is no observable pattern within the residual plot, the assumption of constant variance is not violated.  
+
+Runs test and Durbin-Watson Test for independence of residuals:  
+
+```{r,message=FALSE, warning=FALSE}
+
+res <- model1$res
+runs.test(factor(sign(res)))
+
+DurbinWatsonTest(model1, alternative="two.sided")
 
 ```
+
+Since both p-values are sufficiently large, there exists no significant evidence against the null hypothesis of both tests, which suggests that the residuals are not autocorrelated.   
+
+QQ plot for normal distribution of residuals:  
+
+```{r,message=FALSE, warning=FALSE}
+qqnorm(res, xlab="normal scores", ylab="ordered residuals")
+qqline(res, lty=2)
+
+```
+
+Since the normal probability plot is mostly close to the normal reference line, the assumption that residuals follow a normal distribution is not violated.  
