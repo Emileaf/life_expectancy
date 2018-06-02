@@ -12,7 +12,7 @@ The source dataset [life_expectancy_raw.csv](data/life_expectancy_raw.csv) used 
 
 ## Exploration and Analysis
 
-The data exploration and regression analysis work can be found in [data_exploration.rmd](data_exploration.Rmd), with report generated in [data_exploration.pdf](data_exploration.pdf). This notebook includes:  
+The data exploration and regression analysis work can be found in [data_exploration.Rmd](data_exploration.Rmd), with report generated in [data_exploration.pdf](data_exploration.pdf). This notebook includes:  
 
 - Data cleaning and sample selection
 - Correlation of predictors
